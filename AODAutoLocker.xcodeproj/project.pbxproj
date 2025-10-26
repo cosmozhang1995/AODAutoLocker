@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 77;
+	objectVersion = 70;
 	objects = {
 
 /* Begin PBXFileReference section */
@@ -11,7 +11,7 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
-		BB9D74502EA8706E00192CA6 /* Exceptions for "AODAutoLocker" folder in "AODAutoLocker" target */ = {
+		BB9D74502EA8706E00192CA6 /* PBXFileSystemSynchronizedBuildFileExceptionSet */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
 				Info.plist,
@@ -21,14 +21,7 @@
 /* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
-		BBEA728B2EA77F0400C65A25 /* AODAutoLocker */ = {
-			isa = PBXFileSystemSynchronizedRootGroup;
-			exceptions = (
-				BB9D74502EA8706E00192CA6 /* Exceptions for "AODAutoLocker" folder in "AODAutoLocker" target */,
-			);
-			path = AODAutoLocker;
-			sourceTree = "<group>";
-		};
+		BBEA728B2EA77F0400C65A25 /* AODAutoLocker */ = {isa = PBXFileSystemSynchronizedRootGroup; exceptions = (BB9D74502EA8706E00192CA6 /* PBXFileSystemSynchronizedBuildFileExceptionSet */, ); explicitFileTypes = {}; explicitFolders = (); path = AODAutoLocker; sourceTree = "<group>"; };
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -99,6 +92,7 @@
 				};
 			};
 			buildConfigurationList = BBEA72842EA77F0400C65A25 /* Build configuration list for PBXProject "AODAutoLocker" */;
+			compatibilityVersion = "Xcode 14.0";
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
 			knownRegions = (
@@ -109,7 +103,6 @@
 			);
 			mainGroup = BBEA72802EA77F0400C65A25;
 			minimizedProjectReferenceProxies = 1;
-			preferredProjectObjectVersion = 77;
 			productRefGroup = BBEA728A2EA77F0400C65A25 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";

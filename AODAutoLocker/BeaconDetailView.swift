@@ -12,25 +12,45 @@ internal import Combine
 fileprivate struct ViewItem: View {
     let label: String
     let value: String
-    init(label: String, value: String) {
+    let isShowAlertOnTap: Bool
+
+    @State var isShowAlert: Bool = false
+
+    init(label: String, value: String, showAlertOnTap isShowAlertOnTap: Bool = false) {
         self.label = label
         self.value = value
+        self.isShowAlertOnTap = isShowAlertOnTap
     }
     var body: some View {
-        Button(action: {}, label: {
-            HStack {
-                Text("")
-                HStack() {
-                    Spacer()
-                    Text(label)
-                        .foregroundStyle(.gray)
+        Button(
+            action: {
+                if isShowAlertOnTap {
+                    isShowAlert = true
                 }
-                .frame(width: 108)
-                .padding(0)
-                Spacer().frame(width: 20)
+            },
+            label: {
+                HStack {
+                    Text("")
+                    HStack() {
+                        Spacer()
+                        Text(label)
+                            .foregroundStyle(.gray)
+                    }
+                    .frame(width: 108)
+                    .padding(0)
+                    Spacer().frame(width: 20)
+                    Text(value)
+                        .foregroundStyle(.black)
+                        .lineLimit(2)
+                        .minimumScaleFactor(0.1)
+                }
+            })
+        .alert(label, isPresented: $isShowAlert, actions: {
+            VStack {
                 Text(value)
-                    .foregroundStyle(.black)
-                    .lineLimit(1)
+                Button("OK") {
+                    isShowAlert = false
+                }
             }
         })
     }
@@ -40,13 +60,22 @@ struct BeaconDetailView: View {
     
     @Environment(\.dismiss) var dismiss
     
-    private let beaconInfo: BeaconInfo
-    @StateObject private var controller = BeaconDetailViewController()
+    @StateObject private var beaconManager: BeaconManager = BeaconManager.shared
+
+    let beaconUUID: UUID
+
+    var beaconInfo: BeaconInfo? {
+        get {
+            beaconManager.beacons.first(where: {
+                $0.uuid == beaconUUID
+            })
+        }
+    }
 
     private let onSelect: (() -> Void)?
     
-    init(_ beaconInfo: BeaconInfo, onSelect: (() -> Void)? = nil) {
-        self.beaconInfo = beaconInfo
+    init(_ beaconUUID: UUID, onSelect: (() -> Void)? = nil) {
+        self.beaconUUID = beaconUUID
         self.onSelect = onSelect
     }
     
@@ -54,9 +83,9 @@ struct BeaconDetailView: View {
         Form {
             ViewItem(label: "Manufactory", value: formatManufactoryId(beaconInfo))
             ViewItem(label: "Version", value: formatVersion(beaconInfo))
-            ViewItem(label: "UUID", value: formatUUID(beaconInfo))
-            ViewItem(label: "TX Power", value: String(beaconInfo.txPower))
-            ViewItem(label: "RSSI", value: controller.rssi?.stringValue ?? "NIL")
+            ViewItem(label: "UUID", value: formatUUID(beaconInfo), showAlertOnTap: true)
+            ViewItem(label: "TX Power", value: beaconInfo != nil ? String(beaconInfo!.txPower) : "-")
+            ViewItem(label: "RSSI", value: beaconInfo?.rssi.stringValue ?? "-")
         }
         .navigationTitle("Beacon Detail")
         .toolbar {
@@ -71,6 +100,16 @@ struct BeaconDetailView: View {
                     .padding(.horizontal, 20)
                     .padding(.vertical, 10)
                 }
+            }
+        }
+        .onAppear() {
+            if !beaconManager.isScanning {
+                let _ = beaconManager.startScanning()
+            }
+        }
+        .onDisappear() {
+            if beaconManager.isScanning {
+                beaconManager.stopScanning()
             }
         }
     }
@@ -100,25 +139,10 @@ struct BeaconDetailView: View {
     }
 }
 
-class BeaconDetailViewController : ObservableObject, BeaconManagerScanDelegate {
-
-    fileprivate var beaconInfo: BeaconInfo? = nil
-    @Published fileprivate var rssi: NSNumber? = nil
-
-    func onBeaconListUpdate(_ beaconList: [BeaconInfo]) {
-        if self.beaconInfo != nil {
-            let beaconInfo = beaconList.first(where: { $0.uuid == self.beaconInfo!.uuid })
-            self.rssi = beaconInfo?.rssi
-        } else {
-            self.rssi = nil
-        }
-    }
-}
-
 #Preview {
     NavigationStack {
         BeaconDetailView(
-            provideSampleBeacons()[0]
+            provideSampleBeacons()[0].uuid
         ) {
             print("selected")
         }

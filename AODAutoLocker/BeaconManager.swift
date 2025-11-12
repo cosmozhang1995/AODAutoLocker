@@ -2,6 +2,8 @@ import Foundation
 import SwiftUI
 import CoreLocation
 import CoreBluetooth
+import OSLog
+internal import Combine
 
 struct BeaconInfo: Identifiable {
     let uuid: UUID
@@ -10,6 +12,7 @@ struct BeaconInfo: Identifiable {
     let minor: UInt16
     let txPower: Int8
     let rssi: NSNumber
+    let updateTime: Date
     var id: UUID {
         get {
             return uuid
@@ -17,16 +20,39 @@ struct BeaconInfo: Identifiable {
     }
 }
 
-typealias BeaconScanHandler = ([BeaconInfo]) -> Void
+protocol BeaconManagerDelegate {
+    func onBeaconEnterRegion() -> Void
+    func onBeaconExitRegion() -> Void
+    func onBeaconInRange() -> Void
+    func onBeaconOutRange() -> Void
+}
 
-class BeaconManager : NSObject, CLLocationManagerDelegate, CBCentralManagerDelegate {
-    static let shared = BeaconManager()
+class BeaconManager : NSObject, ObservableObject, CLLocationManagerDelegate, CBCentralManagerDelegate {
+    static let shared: BeaconManager = BeaconManager()
+    
+    let logger = Logger()
+
     private let locationManager = CLLocationManager()
     private let centralManager = CBCentralManager(delegate: nil, queue: .global())
-    private let beaconUUID = UUID(uuidString: "39ED98FF-2900-441A-802F-9C398FC199D2")
-    var onScanUpdate: BeaconScanHandler?
-    private var beaconInfoList: [BeaconInfo] = []
-    private var scanDelegates: [BeaconManagerScanDelegate] = []
+
+    @Published private var beaconInfoList: [BeaconInfo] = provideSampleBeacons()
+    @Published private var _isScanning: Bool = false
+    
+    private var beaconUUID: UUID? = nil
+    
+    var delegate: BeaconManagerDelegate? = nil
+
+    var beacons: [BeaconInfo] {
+        get {
+            return beaconInfoList
+        }
+    }
+    
+    var isScanning: Bool {
+        get {
+            return _isScanning
+        }
+    }
 
     override init() {
         super.init()
@@ -34,30 +60,85 @@ class BeaconManager : NSObject, CLLocationManagerDelegate, CBCentralManagerDeleg
         centralManager.delegate = self
     }
     
-    func startMonitoringBeacon() {
+    func startMonitoringBeacon(uuid beaconUUID: UUID) {
+        logger.info("start monitoring beacon: \(beaconUUID.uuidString)")
+        
+        self.beaconUUID = beaconUUID
+
         locationManager.requestAlwaysAuthorization()
-        let region = CLBeaconRegion(uuid: beaconUUID!, identifier: "com.cosmozhang.beacon")
+        
+        let region = CLBeaconRegion(uuid: beaconUUID, identifier: "com.cosmozhang.beacon")
         region.notifyOnEntry = true
         region.notifyOnExit = true
         region.notifyEntryStateOnDisplay = true
         locationManager.startMonitoring(for: region)
-//        locationManager.startRangingBeacons(since:)
-        let constraint = CLBeaconIdentityConstraint(uuid: beaconUUID!)
-        locationManager.startRangingBeacons(satisfying: constraint)
+        
+        let constraint = CLBeaconIdentityConstraint(uuid: beaconUUID)
+        var foundConstraint = false
+        let rangedBeaconConstraints = locationManager.rangedBeaconConstraints
+        for _constraint in rangedBeaconConstraints {
+            if constraint == _constraint {
+                foundConstraint = true
+                break
+            }
+        }
+        if !foundConstraint {
+            locationManager.startRangingBeacons(satisfying: constraint)
+        }
     }
     
-    func locationManager(_ manager: CLLocationManager, didEnterRegion region: CLRegion) {
-        if let beaconRegion = region as? CLBeaconRegion {
-            beaconRegion.uuid
-            let content = UNMutableNotificationContent()
-            content.title = String(localized: "Beacon detected")
-            content.body = String(localized: "Beacon region enterred")
-            let request = UNNotificationRequest(identifier: "beaconEnter", content: content, trigger: nil)
-            UNUserNotificationCenter.current().add(request)
+    func stopMonitoringBeacon() {
+        logger.info("stop monitoring beacon")
+        
+        beaconUUID = nil
+        
+        let rangedBeaconConstraints = locationManager.rangedBeaconConstraints
+        for constraint in rangedBeaconConstraints {
+            locationManager.stopRangingBeacons(satisfying: constraint)
+        }
+        
+        let monitoredRegions = locationManager.monitoredRegions
+        for region in monitoredRegions {
+            if (region as? CLBeaconRegion) != nil && region.identifier == "com.cosmozhang.beacon" {
+                locationManager.stopMonitoring(for: region)
+            }
+        }
+    }
+
+    func locationManager(_ manager: CLLocationManager, didDetermineState state: CLRegionState, for region: CLRegion) {
+        guard let beaconRegion = region as? CLBeaconRegion else { return }
+        guard beaconRegion.uuid == beaconUUID else { return }
+
+        let content = UNMutableNotificationContent()
+        content.title = String(localized: "Beacon detected")
+        if state == .inside {
+            content.body = String(localized: "Beacon enter region")
+        } else {
+            content.body = String(localized: "Beacon exit region")
+        }
+        let request = UNNotificationRequest(identifier: "beaconEnter", content: content, trigger: nil)
+        UNUserNotificationCenter.current().add(request)
+
+        if state == .inside {
+            delegate?.onBeaconEnterRegion()
+        } else {
+            delegate?.onBeaconExitRegion()
         }
     }
     
     func locationManager(_ manager: CLLocationManager, didRange beacons: [CLBeacon], satisfying beaconConstraint: CLBeaconIdentityConstraint) {
+        var matchBeacon: CLBeacon? = nil
+        for beacon in beacons {
+            if beacon.uuid == beaconUUID {
+                matchBeacon = beacon
+                break
+            }
+        }
+        if matchBeacon != nil {
+            delegate?.onBeaconInRange()
+        } else {
+            delegate?.onBeaconOutRange()
+        }
     }
     
     func startScanning() -> Bool {
@@ -65,6 +146,7 @@ class BeaconManager : NSObject, CLLocationManagerDelegate, CBCentralManagerDeleg
             print("Bluetooth is off")
             return false
         }
+        _isScanning = true
         centralManager.scanForPeripherals(withServices: nil, options: [
             CBCentralManagerScanOptionAllowDuplicatesKey: true
         ])
@@ -74,6 +156,8 @@ class BeaconManager : NSObject, CLLocationManagerDelegate, CBCentralManagerDeleg
     
     func stopScanning() {
         centralManager.stopScan()
+        print("Stop scanning")
+        _isScanning = false
     }
     
     func centralManagerDidUpdateState(_ central: CBCentralManager) {
@@ -88,7 +172,6 @@ class BeaconManager : NSObject, CLLocationManagerDelegate, CBCentralManagerDeleg
         } else {
             beaconInfoList.append(beaconInfo)
         }
-        onScanUpdate?(beaconInfoList)
     }
     
     private func parseIBeacon(from advertisementData: [String: Any], rssi: NSNumber) -> BeaconInfo? {
@@ -135,20 +218,9 @@ class BeaconManager : NSObject, CLLocationManagerDelegate, CBCentralManagerDeleg
             major: major,
             minor: minor,
             txPower: txPower,
-            rssi: rssi
+            rssi: rssi,
+            updateTime: Date()
         )
-    }
-    
-    func addDelegate(scanDelegate: BeaconManagerScanDelegate) {
-        if !scanDelegates.contains(where: { $0 === scanDelegate }) {
-            scanDelegates.append(scanDelegate)
-        }
-    }
-    func removeDelegate(scanDelegate: BeaconManagerScanDelegate) {
-        scanDelegates.removeAll(where: { $0 === scanDelegate})
     }
 }
 
-protocol BeaconManagerScanDelegate: AnyObject {
-    func onBeaconListUpdate(_: [BeaconInfo])
-}

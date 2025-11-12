@@ -8,7 +8,8 @@ func provideSampleBeacons() -> [BeaconInfo] {
             major: 0,
             minor: 0,
             txPower: 127,
-            rssi: -85
+            rssi: -85,
+            updateTime: Date()
         ),
         BeaconInfo(
             uuid: UUID(uuidString: "5A4BCFCE-174E-4BAC-A814-092E77F6B7E5")!,
@@ -16,7 +17,8 @@ func provideSampleBeacons() -> [BeaconInfo] {
             major: 0,
             minor: 0,
             txPower: 100,
-            rssi: -65
+            rssi: -65,
+            updateTime: Date()
         ),
         BeaconInfo(
             uuid: UUID(uuidString: "7B2F9D0A-3C4E-4D1F-8E9A-0B3C5D7E9F1A")!,
@@ -24,7 +26,8 @@ func provideSampleBeacons() -> [BeaconInfo] {
             major: 0,
             minor: 0,
             txPower: -50,
-            rssi: -85
+            rssi: -85,
+            updateTime: Date()
         ),
         BeaconInfo(
             uuid: UUID(uuidString: "E2C56DB5-DFFB-48D2-B060-D0F5A71096E1")!,
@@ -32,7 +35,8 @@ func provideSampleBeacons() -> [BeaconInfo] {
             major: 0,
             minor: 0,
             txPower: 127,
-            rssi: -85
+            rssi: -85,
+            updateTime: Date()
         ),
         BeaconInfo(
             uuid: UUID(uuidString: "5A4BCFCE-174E-4BAC-A814-092E77F6B7E6")!,
@@ -40,7 +44,8 @@ func provideSampleBeacons() -> [BeaconInfo] {
             major: 0,
             minor: 0,
             txPower: 100,
-            rssi: -65
+            rssi: -65,
+            updateTime: Date()
         ),
         BeaconInfo(
             uuid: UUID(uuidString: "7B2F9D0A-3C4E-4D1F-8E9A-0B3C5D7E9F1B")!,
@@ -48,7 +53,8 @@ func provideSampleBeacons() -> [BeaconInfo] {
             major: 0,
             minor: 0,
             txPower: -50,
-            rssi: -85
+            rssi: -85,
+            updateTime: Date()
         ),
     ]
 }

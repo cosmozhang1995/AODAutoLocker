@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 70;
+	objectVersion = 90;
 	objects = {
 
 /* Begin PBXFileReference section */
@@ -11,7 +11,7 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
-		BB9D74502EA8706E00192CA6 /* PBXFileSystemSynchronizedBuildFileExceptionSet */ = {
+		BB9D74502EA8706E00192CA6 /* Exceptions for "AODAutoLocker" folder in "AODAutoLocker" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
 				Info.plist,
@@ -21,16 +21,21 @@
 /* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
-		BBEA728B2EA77F0400C65A25 /* AODAutoLocker */ = {isa = PBXFileSystemSynchronizedRootGroup; exceptions = (BB9D74502EA8706E00192CA6 /* PBXFileSystemSynchronizedBuildFileExceptionSet */, ); explicitFileTypes = {}; explicitFolders = (); path = AODAutoLocker; sourceTree = "<group>"; };
+		BBEA728B2EA77F0400C65A25 /* AODAutoLocker */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				BB9D74502EA8706E00192CA6 /* Exceptions for "AODAutoLocker" folder in "AODAutoLocker" target */,
+			);
+			path = AODAutoLocker;
+			sourceTree = "<group>";
+		};
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
 		BBEA72862EA77F0400C65A25 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
 			files = (
 			);
-			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
@@ -64,14 +69,10 @@
 			);
 			buildRules = (
 			);
-			dependencies = (
-			);
 			fileSystemSynchronizedGroups = (
 				BBEA728B2EA77F0400C65A25 /* AODAutoLocker */,
 			);
 			name = AODAutoLocker;
-			packageProductDependencies = (
-			);
 			productName = AODAutoLocker;
 			productReference = BBEA72892EA77F0400C65A25 /* AODAutoLocker.app */;
 			productType = "com.apple.product-type.application";
@@ -92,7 +93,6 @@
 				};
 			};
 			buildConfigurationList = BBEA72842EA77F0400C65A25 /* Build configuration list for PBXProject "AODAutoLocker" */;
-			compatibilityVersion = "Xcode 13.0";
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
 			knownRegions = (
@@ -103,6 +103,7 @@
 			);
 			mainGroup = BBEA72802EA77F0400C65A25;
 			minimizedProjectReferenceProxies = 1;
+			preferredProjectObjectVersion = 90;
 			productRefGroup = BBEA728A2EA77F0400C65A25 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -115,25 +116,21 @@
 /* Begin PBXResourcesBuildPhase section */
 		BBEA72872EA77F0400C65A25 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
-			buildActionMask = 2147483647;
 			files = (
 			);
-			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		BBEA72852EA77F0400C65A25 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
 			files = (
 			);
-			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin XCBuildConfiguration section */
-		BBEA72922EA77F0600C65A25 /* Debug */ = {
+		BBEA72922EA77F0600C65A25 /* Debug configuration for PBXProject "AODAutoLocker" */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
@@ -197,7 +194,7 @@
 			};
 			name = Debug;
 		};
-		BBEA72932EA77F0600C65A25 /* Release */ = {
+		BBEA72932EA77F0600C65A25 /* Release configuration for PBXProject "AODAutoLocker" */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
@@ -254,7 +251,7 @@
 			};
 			name = Release;
 		};
-		BBEA72952EA77F0600C65A25 /* Debug */ = {
+		BBEA72952EA77F0600C65A25 /* Debug configuration for PBXNativeTarget "AODAutoLocker" */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
@@ -293,7 +290,7 @@
 			};
 			name = Debug;
 		};
-		BBEA72962EA77F0600C65A25 /* Release */ = {
+		BBEA72962EA77F0600C65A25 /* Release configuration for PBXNativeTarget "AODAutoLocker" */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
@@ -338,19 +335,17 @@
 		BBEA72842EA77F0400C65A25 /* Build configuration list for PBXProject "AODAutoLocker" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				BBEA72922EA77F0600C65A25 /* Debug */,
-				BBEA72932EA77F0600C65A25 /* Release */,
+				BBEA72922EA77F0600C65A25 /* Debug configuration for PBXProject "AODAutoLocker" */,
+				BBEA72932EA77F0600C65A25 /* Release configuration for PBXProject "AODAutoLocker" */,
 			);
-			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
 		BBEA72942EA77F0600C65A25 /* Build configuration list for PBXNativeTarget "AODAutoLocker" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				BBEA72952EA77F0600C65A25 /* Debug */,
-				BBEA72962EA77F0600C65A25 /* Release */,
+				BBEA72952EA77F0600C65A25 /* Debug configuration for PBXNativeTarget "AODAutoLocker" */,
+				BBEA72962EA77F0600C65A25 /* Release configuration for PBXNativeTarget "AODAutoLocker" */,
 			);
-			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */

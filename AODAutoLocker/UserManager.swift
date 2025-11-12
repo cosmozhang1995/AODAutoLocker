@@ -1,4 +1,5 @@
 import Foundation
+import OSLog
 internal import Combine
 
 fileprivate let UDKEY_TOKEN = "aod.token"
@@ -21,6 +22,8 @@ struct CarStatus {
 class UserManager : ObservableObject {
     static let shared = UserManager()
     
+    let logger = Logger(subsystem: Bundle.main.bundleIdentifier!, category: "UserManager")
+    
     @Published private var token: String? = nil
     @Published private var carInfo: CarInfo? = nil
     
@@ -39,6 +42,12 @@ class UserManager : ObservableObject {
     var car: CarInfo? {
         get {
             return carInfo
+        }
+    }
+    
+    var carPublisher: Published<CarInfo?>.Publisher {
+        get {
+            return $carInfo
         }
     }
     
@@ -134,6 +143,7 @@ class UserManager : ObservableObject {
     }
 
     func login(phone: String, password: String) async -> Bool {
+        logger.info("login")
         let response = await exchange(
             method: .POST,
             path: "/aodkey/login",
@@ -154,6 +164,7 @@ class UserManager : ObservableObject {
     }
     
     func logout() {
+        logger.info("logout")
         token = nil
         let defaults = UserDefaults.standard
         defaults.removeObject(forKey: UDKEY_TOKEN)
@@ -199,6 +210,7 @@ class UserManager : ObservableObject {
     }
     
     func setCar(_ carInfo: CarInfo?) {
+        logger.info("set car: \(carInfo?.id ?? "NIL")")
         self.carInfo = carInfo
         let encoder = JSONEncoder()
         do {
@@ -209,6 +221,7 @@ class UserManager : ObservableObject {
     }
     
     func resetCar() {
+        logger.info("set car: NIL")
         self.carInfo = nil
     }
     
@@ -219,6 +232,7 @@ class UserManager : ObservableObject {
         } catch {
             print("Failed to deserialize car info")
         }
+        logger.info("load car: \(self.carInfo?.id ?? "NIL")")
     }
     
     private enum CarControlAction: String {
@@ -226,6 +240,7 @@ class UserManager : ObservableObject {
         case Unlock = "unlock"
     }
     private func carControl(_ action: CarControlAction) async -> Bool {
+        logger.info("control: \(action.rawValue)")
         if carInfo?.id == nil {
             return false
         }

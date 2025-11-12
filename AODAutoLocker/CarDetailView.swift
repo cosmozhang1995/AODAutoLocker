@@ -113,10 +113,18 @@ struct CarDetailView: View {
         .listStyle(.inset)
         .navigationTitle(pageTitle)
         .navigationBarTitleDisplayMode(.inline)
+        .navigationDestination(for: MainNavigationPage.self) {
+            switch $0 {
+            case .CarSettings:
+                CarSettingsView()
+            default:
+                NotFoundView()
+            }
+        }
         .toolbar() {
             ToolbarItem(placement: .topBarTrailing) {
-                NavigationLink(destination: {
-                    CarSettingsView()
+                Button(action: {
+                    MainNavigationController.shared.push(.CarSettings)
                 }, label: {
                     Text("Settings")
                 })

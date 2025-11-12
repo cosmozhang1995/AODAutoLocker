@@ -13,7 +13,7 @@ struct BeaconListView: View {
     
     @Environment(\.dismiss) var dismiss
 
-    @StateObject private var controller: BeaconListViewController = BeaconListViewController()
+    @StateObject private var beaconManager: BeaconManager = BeaconManager.shared
 
     private let onSelect: ((_: BeaconInfo) -> Void)?
     
@@ -24,10 +24,10 @@ struct BeaconListView: View {
     var body: some View {
         VStack() {
             List {
-                ForEach(controller.beaconList) { beaconInfo in
+                ForEach(beaconManager.beacons) { beaconInfo in
                     NavigationLink(
                         destination: {
-                            BeaconDetailView(beaconInfo) {
+                            BeaconDetailView(beaconInfo.uuid) {
                                 dismiss()
                                 if onSelect != nil {
                                     onSelect!(beaconInfo)
@@ -49,19 +49,36 @@ struct BeaconListView: View {
             }
             .padding(0)
             .listStyle(.plain)
-            Button(controller.isScanning ? "Stop" : "Scan") {
-                if controller.isScanning {
-                    controller.stopScan()
-                } else {
-                    controller.startScan()
-                }
-            }
-            .buttonStyle(.borderedProminent)
-            .font(.system(size: 24))
-            .controlSize(.large)
+//            if beaconManager.isScanning {
+//                Button("Stop") {
+//                    beaconManager.stopScanning()
+//                }
+//                .buttonStyle(.borderedProminent)
+//                .foregroundStyle(.red)
+//                .font(.system(size: 24))
+//                .controlSize(.large)
+//            } else {
+//                Button("Scan") {
+//                    let _ = beaconManager.startScanning()
+//                }
+//                .buttonStyle(.borderedProminent)
+//                .font(.system(size: 24))
+//                .controlSize(.large)
+//            }
         }
         .padding()
-        .navigationTitle("Detected Devices")
+        .navigationTitle("Detected Beacons")
+        .navigationBarTitleDisplayMode(.inline)
+        .onAppear() {
+            if !beaconManager.isScanning {
+                let _ = beaconManager.startScanning()
+            }
+        }
+        .onDisappear() {
+            if beaconManager.isScanning {
+                beaconManager.stopScanning()
+            }
+        }
     }
 
     func formatBeaconTitle(_ beaconInfo: BeaconInfo) -> String {
@@ -75,26 +92,10 @@ struct BeaconListView: View {
     }
 }
 
-fileprivate class BeaconListViewController : ObservableObject, BeaconManagerScanDelegate {
-    @Published fileprivate var isScanning = false
-    @Published fileprivate var beaconList: [BeaconInfo] = provideSampleBeacons()
-
-    func startScan() {
-        isScanning = BeaconManager.shared.startScanning()
-    }
-    
-    func stopScan() {
-        BeaconManager.shared.stopScanning()
-        isScanning = false
-    }
-    
-    func onBeaconListUpdate(_: [BeaconInfo]) {
-        self.beaconList = beaconList
-    }
-}
-
 #Preview {
-    BeaconListView() { beaconInfo in
-        print("selected:", beaconInfo.id)
+    NavigationStack {
+        BeaconListView() { beaconInfo in
+            print("selected:", beaconInfo.id)
+        }
     }
 }
